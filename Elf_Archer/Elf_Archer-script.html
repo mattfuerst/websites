@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Elf Archer</title>
+		<link rel="icon" href="img/icon.png"> <!-- img/(name of image) -->
+		<link rel="stylesheet" href="css/style.css">
+		<!-- Load the Paper.js library -->
+		<script type="text/javascript" src="lib/paper-full.js"></script>
+		<!-- Define inlined PaperScript associate it with myCanvas -->
+		<script type="text/paperscript" canvas="myCanvas">
+			// --------------- VARIABLES --------------- //
+			step = 4;
+			Elf_Archer_Direction = 'right';
+			currentSkin = 0;
+			NumberOfMovingSkins = 23;
+			
+			console.log(view); // printing the view to help debug our code
+			
+			var Elf_Archer = new Raster('img/Elf_Archer/Moving/0.png');
+			Elf_Archer.size = {height: 49, width: 59}; // need to fix this
+			Elf_Archer.postion = view.center; <!-- setting it to the center of the screen -->
+			
+			var ground = new Path.RegularPolygon(view.center, 4, (view.size.height*0.5)/Math.pow(2,0.5)); // RegularPolygon(CENTER, SIDES, SIZE)
+			console.log(ground);
+			ground.style.fillcolor = 'black'; 
+			ground.visible = true;
+			//console.log(ground.position); // debug
+			//ground.position.y = view.center.y + view.size.height*0.5 + Elf_Archer.size.height*0.5;
+			//console.log(ground.position); // debug
+			//groundSide = view.size.width/(2*Math.pow(2,0.5));
+			//ground.scale((view.size.width)/(groundSide), 1); // scale(dx, dy)
+			
+			//Elf_Archer.visible = false;
+			//project.activelayer.children[0] = ground;
+			//project.activelayer.children[1] = Elf_Archer;
+			
+			function onResize(event) {
+				Elf_Archer.position = view.center;
+				//ground.position = view.center;
+				//ground.position.y = view.center.y + view.size.height*0.5 + Elf_Archer.size.height*0.5;
+			}
+			
+			// Permanent Framing
+			function onFrame (event) {
+
+			}
+			
+			function onKeyDown(event) {
+				if(event.key == 'left') {
+					takeOneStep('left');
+				}
+				if(event.key == 'right') {
+					takeOneStep('right');
+				}
+			}
+			
+			// ---------------- FUNCTIONS ---------------- //
+			
+			function takeOneStep(direction) {
+				if(direction == 'left') {
+					ChangeMovingSkin();
+					Elf_Archer.position.x -= step;
+					if (Elf_Archer_Direction == 'right') {
+						Elf_Archer.scale(-1,1);
+					}
+					Elf_Archer_Direction = "left"
+				}
+				if(direction == 'right') {
+					ChangeMovingSkin();
+					Elf_Archer.position.x += step;
+					if (Elf_Archer_Direction == 'left') {
+						Elf_Archer.scale(-1,1);
+					}
+					Elf_Archer_Direction = "right"
+				}
+			
+			}
+			
+			function ChangeMovingSkin() {
+				if (currentSkin == NumberOfMovingSkins){
+					currentSkin = 0;
+				}
+				currentSkin += 1;
+				Elf_Archer.source = 'img/Elf_Archer/Moving/'+currentSkin+'.png';
+			}
+			
+			function onMouseDown(event) {
+			
+				distance = Math.abs(Elf_Archer.position.x - event.downPoint.x);
+			
+				if (distance > step && Elf_Archer.position.x > event.downPoint.x) { // We are going to the left
+					takeOneStep('left');
+				}
+				
+				if (distance > step && Elf_Archer.position.x < event.downPoint.x) { // We are going to the right
+					takeOneStep('right');
+				}
+			}
+			
+			
+			function onMouseDrag(event) {
+			
+				distance = Math.abs(Elf_Archer.position.x - event.lastPoint.x);
+			
+				if (distance > step && Elf_Archer.position.x > event.lastPoint.x) { // We are going to the left
+					takeOneStep('left');
+				}
+				
+				if (distance > step && Elf_Archer.position.x < event.lastPoint.x) { // We are going to the right
+					takeOneStep('right');
+				}
+			
+			}
+			
+			
+			
+		</script>
+	</head>
+	<body>
+		<canvas id="myCanvas"  hidpi="off" resize style="background:#A9C0F9"></canvas> <!--style="background:#A9C0F9"-->
+	</body>
+</html>
